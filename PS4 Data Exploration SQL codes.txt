@@ -1,0 +1,186 @@
+PS4 Game List SQL Codes 
+
+
+1) Which year were the most games released?
+
+
+	SELECT COUNT
+    		(game_name) AS Number_of_Games,
+    		release_Year
+	FROM
+    		ps4_games.game_list
+	GROUP BY
+   		release_Year
+	ORDER BY 
+    		release_Year ASC;
+
+========================================================================================================
+
+2. How many games are physical AND digital?
+
+
+	SELECT COUNT
+    		(Medium) AS Num_of_Phy_And_Digital_Games
+	FROM 
+   		ps4_games.game_list
+	WHERE 
+    		Medium = "Physical and Digital";
+
+========================================================================================================
+
+3. What 5 games are the biggest in size and the year each were released?
+
+
+	SELECT
+    		game_name,
+    		size,
+    		release_year
+	FROM 
+    		ps4_games.game_list
+	ORDER BY 
+    		size DESC;
+
+========================================================================================================
+
+4. What developer released the most games in 2019?
+
+
+	SELECT COUNT
+    		(game_name) AS NUM_OF_GAMES,
+    		developer,
+    		release_year
+	FROM 
+    		ps4_games.game_list
+	WHERE 
+    		release_year = 2019
+	GROUP BY
+   		developer,
+    		release_year
+	ORDER BY 
+    		NUM_OF_GAMES desc;
+
+========================================================================================================
+
+5. Does the size of the game depend on the medium it’s on?
+
+
+	SELECT 
+    		size,
+    		medium
+	FROM 
+    		ps4_games.game_list
+	WHERE 
+    		medium = "Digital only"
+	ORDER By
+    		size desc 
+	LIMIT 10
+
+--------------------------------------------
+
+	SELECT 
+    		size,
+   		 medium
+	FROM 
+    		ps4_games.game_list
+	WHERE 
+    		medium = "Physical and Digital"
+	ORDER BY
+    		size desc 
+	LIMIT 10
+
+========================================================================================================
+
+6. What is the average number of games released in the past 5 year?
+
+
+	WITH average_game_release as(
+    	SELECT COUNT
+        	(game_name)AS num_of_games,
+        	release_year
+    	FROM 
+        	ps4_games.game_list
+    	GROUP BY 
+   		release_year
+	)
+		SELECT 
+    			CAST(AVG(num_of_games)as INT)AS Avg_num_of_games
+		FROM 
+    			average_game_release
+		WHERE 
+    			release_year BETWEEN 2017 AND 2021;
+
+========================================================================================================
+
+7. What is the number of games released by each developer in the past 2 year?
+
+
+	SELECT
+    		developer,
+    	COUNT(game_name) AS num_of_games,
+    		release_year
+	FROM 
+    		ps4_games.game_list
+	WHERE 
+   		release_year BETWEEN 2019 AND 2021
+	GROUP BY 
+    		developer,
+     		release_year
+	ORDER BY 
+    		developer ASC;
+
+========================================================================================================
+
+8. Find all games released in 2020 that start with the letter "R"?
+
+
+	SELECT
+    		game_name,
+    		release_year
+	FROM
+    		ps4_games.game_list
+	WHERE
+    		release_year = 2020
+	AND
+    		game_name LIKE "R%";
+
+========================================================================================================
+
+9. What genre of video game was released the most in 2019?
+
+SELECT
+    genre,
+    COUNT(game_name)AS num_of_genre_games,
+    release_year
+FROM
+    ps4_games.game_list
+WHERE
+    release_year = 2019
+GROUP BY 
+    genre,
+    release_year
+ORDER BY 
+    num_of_genre_games DESC;
+
+========================================================================================================
+
+10. What genre of game released the most during the holiday season in 2020? (November-December)
+
+
+	SELECT
+    		genre,
+    	COUNT(game_name)AS num_of_genre_games,
+    		release_date
+	FROM
+    		ps4_games.game_list
+	WHERE
+    		release_date BETWEEN '2020-11-01' AND '2020-12-31'
+	GROUP BY 
+    		genre,
+    		release_date
+	ORDER BY
+     		release_date ASC;
+
+
+
+
+
