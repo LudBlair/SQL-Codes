@@ -1,0 +1,209 @@
+					Bella Beats SQL Code
+
+1)
+
+## I want to make sure all the records for uploaded successfully so I went ahead and check the database to see.
+
+SELECT *
+FROM 
+    bellabeat.activitydata;
+
+TEXT
+SQL CODE:
+SELECT *
+FROM
+    bellabeat.sleepdata;
+
+--------------------------------------------------------------------------------------------------------
+
+2) 
+
+## I first began my analysis by looking to see what the average time a user spent active throughout the day. 
+## Looking to see the average time users spent being active throughout the day.
+
+SELECT
+    AVG(VeryActiveMinutes),
+    AVG(LightlyActiveMinutes),
+    ROUND((AVG(VeryActiveMinutes) + AVG(LightlyActiveMinutes))/60,2) AS AVG_TIME
+FROM
+    bellabeat.activitydata
+
+				RESULTS: AVERAGE TIME SPENT ACTIVE PER DAY = 3.78 hours
+
+--------------------------------------------------------------------------------------------------------
+
+3)
+
+/* I wanted to see how many times users logged hitting their daily recommended steps. The recommended steps for an average person is 10,000. 
+Therefore, I separate each count into the following:
+
+Less than 2,500 steps, 
+Between 2,500 and 5,000 steps, 
+Between 5,000 and 7,500 steps, 
+Between 7500 and 10,000 steps, 
+And finally >=10,000.
+*/
+
+
+##  CHECKING FOR HOW MANY DISTINCT ROWS THEY ARE IN THE TOTAL STEPS COLUMN AS A REFERENCE POINT OF TOTAL COLUMNS.
+
+SELECT
+    COUNT(DISTINCT TOTALSTEPS)
+FROM
+    bellabeat.activitydata;
+
+ 						RESULT: 842 ROWS
+
+--------------------------------------------------------------------------------------------------------
+
+4)
+
+## CHECKING FOR HOW MANY DISTINCT ROWS THAT ARE LESS THAN OR EQUAL TO 2,500 steps.
+
+SELECT
+    COUNT(DISTINCT TOTALSTEPS)
+FROM
+    bellabeat.activitydata
+WHERE
+    TOTALSTEPS <=2500;
+
+						RESULT: 86 ROWS
+
+--------------------------------------------------------------------------------------------------------
+
+5)
+
+## CHECKING FOR HOW MANY DISTINCT ROWS THAT ARE BETWEEN 2,500 and 5,000 steps
+
+SELECT
+    COUNT(DISTINCT TOTALSTEPS)
+FROM
+    bellabeat.activitydata
+WHERE
+    TOTALSTEPS BETWEEN 2500 AND 5000;
+
+						RESULT: 135 ROWS
+
+--------------------------------------------------------------------------------------------------------
+
+6)
+
+## CHECKING FOR HOW MANY DISTINCT ROWS THAT ARE BETWEEN 5,000 and 7,500 steps.
+
+SELECT
+    COUNT(DISTINCT TOTALSTEPS)
+FROM
+    bellabeat.activitydata
+WHERE
+    TOTALSTEPS BETWEEN 5000 AND 7500;
+
+						RESULT: 164 ROWS
+
+--------------------------------------------------------------------------------------------------------
+
+7)
+
+## CHECKING FOR HOW MANY DISTINCT ROWS THAT ARE BETWEEN 7,500 and 10,000 steps.
+
+SELECT
+COUNT(DISTINCT TOTALSTEPS)
+FROM
+bellabeat.activitydata
+WHERE
+    TOTALSTEPS BETWEEN 7500 AND 10000;
+
+						RESULT: 159 ROWS
+
+--------------------------------------------------------------------------------------------------------
+8)
+ 
+## CHECKING FOR HOW MANY DISTINCT ROWS THAT ARE GREATER OR EQUAL TO 10,0000 STEPS
+
+SELECT
+ COUNT(DISTINCT TOTALSTEPS)
+FROM
+bellabeat.activitydata
+WHERE
+    TOTALSTEPS >=10000
+
+						RESULT: 298 ROWS
+
+--------------------------------------------------------------------------------------------------------
+10)
+
+##I went further into my analysis by checking to see how much calories users burned if they slept less than 6 hours versus sleeping between 6-8 hours.
+## Checking to see what the average calories burned is for those who slept less than 6 hours by joining columns from the both sleepdata table and activitydata table.
+
+WITH HOURS_INBED_AND_CALORIES AS (
+
+SELECT
+    activitydata.ID,
+    activitydata.CALORIES, 
+    ROUND((sleepdata.TOTALMINUTESASLEEP)/60,2) AS TOTAL_HOURS_SLEPT,
+    sleepdata.TOTALTIMEINBED
+FROM
+    bellabeat.activitydata
+INNER JOIN
+    bellabeat.sleepdata ON activitydata.ID=sleepdata.ID
+GROUP BY
+ID,
+CALORIES,
+TOTALMINUTESASLEEP,
+TOTALTIMEINBED
+ORDER BY
+TOTAL_HOURS_SLEPT DESC
+
+)
+
+SELECT
+    ROUND(AVG(CALORIES),0),
+    ROUND(AVG(TOTAL_HOURS_SLEPT),2) AS NEW_TOTAL_HOURS_SLEPT,
+    ROUND (AVG(TOTALTIMEINBED)/60,2) AS NEW_TOTAL_TIME_IN_BED
+FROM 
+    HOURSINBED_AND_CALORIES
+WHERE 
+    TOTAL_HOURS_SLEPT <=6;
+
+			RESULTS: 2177 CALORIES BURNED/4.43 HOURS ASLEEP/ 5.37 HOURS IN BED
+
+--------------------------------------------------------------------------------------------------------
+11)
+ 
+## Checking to see what the average calories burned is for those who slept between 6-8 hours by joining columns from the both sleepdata table and activitydata table 
+and changing WHERE clause.
+
+WITH HOURSINBED_AND_CALORIES AS (
+SELECT
+    activitydata.ID,
+    activitydata.CALORIES, 
+    ROUND((sleepdata.TOTALMINUTESASLEEP)/60,2) AS TOTAL_HOURS_SLEPT,
+    sleepdata.TOTALTIMEINBED
+FROM
+    bellabeat.activitydata
+INNER JOIN
+    bellabeat.sleepdata ON activitydata.ID=sleepdata.ID
+GROUP BY
+    ID,
+    CALORIES,
+    TOTALMINUTESASLEEP,
+    TOTALTIMEINBED,
+ORDER BY
+    TOTAL_HOURS_SLEPT DESC
+
+    )
+
+SELECT
+    ROUND(AVG(CALORIES),0),
+    ROUND(AVG(TOTAL_HOURS_SLEPT),2) AS NEW_TOTAL_HOURS_SLEPT,
+    ROUND (AVG(TOTALTIMEINBED)/60,2) AS NEW_TOTAL_TIME_IN_BED
+FROM 
+    HOURSINBED_AND_CALORIES
+WHERE 
+    TOTAL_HOURS_SLEPT BETWEEN 6 AND 8;
+
+RESULTS: 2472 CALORIES BURNED/7.09 HOURS ASLEEP/7.59 HOURS IN BED
+
+--------------------------------------------------------------------------------------------------------
+
+
+
