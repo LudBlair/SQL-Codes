@@ -1,0 +1,139 @@
+
+1)
+
+## Looking to see what age groups has the highest charges.
+## Age groups will be (18-24),(25-34),(35-44),(55-64) as it will provide more consistency
+
+SELECT
+    case
+    when age between 18 and 24 then '18-24'
+    when age between 25 and 34 then '25-34'
+    when age between 35 and 44 then '35-44'
+    when age between 45 and 54 then '45-54'
+    when age between 55 and 64 then '55-64'
+    END as age_range,
+COUNT
+    (charges) AS charges_by_age_group
+FROM
+    health_in.data_in
+GROUP BY 
+    case
+    when age between 18 and 24 then '18-24'
+    when age between 25 and 34 then '25-34'
+    when age between 35 and 44 then '35-44'
+    when age between 45 and 54 then '45-54'
+    when age between 55 and 64 then '55-64'
+   END
+
+--------------------------------------------------------------------------------------------------------
+
+2)
+
+## Checking to see BMI averages across gender 
+
+SELECT
+    sex,
+    ROUND(AVG(bmi),2) AS average_bmi
+FROM 
+    health_in.data_in
+GROUP BY 
+    sex
+
+--------------------------------------------------------------------------------------------------------
+
+3)
+
+## Checking to see if males have a higher charge cost than females 
+
+SELECT
+    sex,
+    ROUND(AVG(charges),2) AS average_charges
+FROM 
+    health_in.data_in
+GROUP BY 
+    sex
+
+--------------------------------------------------------------------------------------------------------
+
+4)
+
+## Checking to see which regions have the highest charge cost, on average
+
+SELECT
+    region,
+    ROUND(AVG(charges),2) AS average_charges
+FROM 
+    health_in.data_in
+GROUP BY 
+    region
+--------------------------------------------------------------------------------------------------------
+
+5)
+
+## Checking to see which regions have the most smokers, on average 
+
+SELECT
+    region,
+    COUNT(smoker) AS number_of_smokers
+FROM 
+    health_in.data_in
+WHERE 
+    smoker = TRUE
+GROUP BY 
+    region,
+    smoker
+ORDER BY 
+    number_of_smokers DESC
+
+## southeast contains the most smokers with 91 people 
+
+--------------------------------------------------------------------------------------------------------
+
+6)
+
+## I was curious to see if higher BMI correlate with more or less children?
+
+With new_table as 
+(
+    SELECT 
+    case 
+    when bmi <15 THEN 'Under 15'
+    when bmi BETWEEN 15 AND 20 THEN '20 and under'
+    when bmi BETWEEN 20 AND 29.99 THEN '20-29'
+    when bmi BETWEEN 30 AND 39.99 THEN '30-39'
+    when bmi BETWEEN 40 AND 49.99 THEN '40-49'
+    when bmi >50 THEN '50 and over'
+
+    END as bmi_range,
+    AVG(children) as children
+FROM 
+    health_in.data_in 
+WHERE 
+    children != 0
+GROUP BY    
+    case 
+    when bmi <15 THEN 'Under 15'
+    when bmi BETWEEN 15 AND 20 THEN '20 and under'
+    when bmi BETWEEN 20 AND 29.99 THEN '20-29'
+    when bmi BETWEEN 30 AND 39.99 THEN '30-39'
+    when bmi BETWEEN 40 AND 49.99 THEN '40-49'
+    when bmi >50 THEN '50 and over'
+    END
+)
+SELECT  
+    *
+FROM 
+    new_table 
+GROUP BY 
+    bmi_range,
+    children
+ORDER BY 
+    bmi_range asc
+
+###recieve nulls for bmi_range but not sure why that's the case
+## bmi does not show a trend with having more children.
+
+
+
+
+
